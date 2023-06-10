@@ -30,14 +30,16 @@ def get_transcripts(video_id):
             Text=text,
             VoiceId='Seoyeon'
         )
-
         # Create an in-memory file
         audio_stream = io.BytesIO()
         audio_stream.write(response['AudioStream'].read())
         audio_stream.seek(0)
 
-        audio_base64 = base64.b64encode(b'test').decode('utf-8')
+        # This will give you the byte data
+        audio_bytes = audio_stream.getvalue()
 
+        # If you need base64 representation
+        audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
         transcript_data.append({
             'text': text,
             'start': start,

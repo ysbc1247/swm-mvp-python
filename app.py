@@ -3,16 +3,21 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import boto3
 import io
 import base64
+import os
 
 app = Flask(__name__)
 
+
 @app.route('/transcripts/<video_id>', methods=['GET'])
 def get_transcripts(video_id):
-    # Initialize Polly client
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+
     polly_client = boto3.Session(
-                aws_access_key_id='AKIAVTQLZ7ZOZ3E2WU7F',
-                aws_secret_access_key='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',
-                region_name='ap-northeast-2').client('polly')
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        region_name='ap-northeast-2'
+    ).client('polly')
 
     transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
     transcript = transcript_list.find_transcript(['ko'])
@@ -50,5 +55,7 @@ def get_transcripts(video_id):
     return jsonify({
         'transcripts': transcript_data
     })
+
+
 if __name__ == "__main__":
     app.run(port=5000)
